@@ -72,7 +72,7 @@ def map_clicks(input_dir, input_files_set, key_col):
 """Reduces the provided mapped_clicks and returns a DataFrame containing <key, val> (<date, count>) pairs"""
 def reduce(mapped_clicks, reducers_count, key_col, val_col):
     threads = []
-    # An array with arrays of combined <key, value> pairs for each map
+    # Combined <key, value> pairs from each map
     reduced_clicks = []
 
     reducers_count = min(reducers_count, len(mapped_clicks)) # check if the number of reducers is logical
@@ -94,6 +94,7 @@ def reduce(mapped_clicks, reducers_count, key_col, val_col):
 
     for x in threads:
         x.join()
+        # Combine results of each reducer
         reduced_clicks.extend(x.value)
 
     # Linearly combine results of each reducer.

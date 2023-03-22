@@ -27,7 +27,7 @@ def start_thread(_target=None, _args=()):
 When users are mapped, array contain only their combined indexes.
 When clicks are mapped, nested arrays contain <key, val> pairs, where key=user_id and val=(date&click_target)"""
 def map(input_dir, mappers_count, key_col, filter_col=None, filter=None):
-    mapped_values = [] # stores arrays of mapped users IDs from each file
+    mapped_values = []
     threads = []
 
     input_files = os.listdir(input_dir) # An array of all file names in the directory
@@ -72,10 +72,10 @@ def map_values(input_dir, input_files_set, key_col, filter_col=None, filter=None
     return mapped_values
 
 """Reduces the mapped_clicks based on mapped_users IDs
-and returns a DataFrame containing <key, val> pairs, where key is user_id and val is data and click_target"""
+and returns a DataFrame with three columns: id, date, click_target
+(<key=id, val=(date, click_target)>)"""
 def reduce(mapped_users, mapped_clicks, reducers_count):
     threads = []
-    # An array with arrays of combined <key, value> pairs for each map
     reduced_clicks = []
 
     reducers_count = min(reducers_count, len(mapped_clicks)) # check if the number of reducers is logical
@@ -129,6 +129,6 @@ mapped_users = map("./data/users", mappers_count, key_col, filter_col, filter)
 key_col = "user_id"
 mapped_clicks = map("./data/clicks", mappers_count, key_col)
 
-# return a dataframe containing all clicks that were made by LT users
+# A dataframe containing all clicks that were made by LT users
 mapped_clicks = reduce(mapped_users, mapped_clicks, reducers_count)
 output_results("data/filtered_clicks.csv", mapped_clicks)
